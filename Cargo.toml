@@ -1,5 +1,7 @@
 [package]
 name = "roughly-rs"
+description = "A Rust library for the RoughlyRight API"
+license = "MIT"
 version = "0.1.0"
 edition = "2021"
 repositiory = "https://github.com/24hr-malmo/rougly-rs"
