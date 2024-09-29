@@ -185,7 +185,8 @@ impl RoughlyRight {
                     let mut set: HashSet<CompactEmployee> = HashSet::new();
                     let mut customer_image = None;
                     if customer.image.is_some() {
-                        customer_image = Some(format!("{}{}", CUSTOMER_IMAGE_URL, customer.image.clone().unwrap()));
+                        let image = customer.image.clone().unwrap().replace("/img/customers/", "");
+                        customer_image = Some(format!("{}/{}", CUSTOMER_IMAGE_URL, image));
                     }
                     let mut employee_image = None;
                     if employee.image.is_some() {
