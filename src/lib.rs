@@ -5,7 +5,7 @@ pub mod data;
 use data::{CompactEmployee, CompactProject, Customer, Employee, Project, WeekData};
 use reqwest::{header::{
     HeaderMap, HeaderValue, CACHE_CONTROL, CONTENT_TYPE, REFERER
-}, Client, };
+}, Client, Response, };
 
 pub struct RoughlyRight {
     username: String,
@@ -30,12 +30,27 @@ impl RoughlyRight {
 
     }
 
-    pub async fn employees(&mut self) -> Result<Vec<Employee>, Box<dyn Error>> {
+    pub async fn get(&mut self, url: &str) -> Result<Response, Box<dyn Error>> {
 
         self.login().await?;
-
-        let url = "https://app.roughlyright.com/employees?active=true";
         let response = self.client.get(url).send().await?;
+
+        if response.status().is_success() {
+            return Ok(response);
+        } else if response.status() == 401 {
+            self.logged_in = false;
+            self.login().await?;
+            let response = self.client.get(url).send().await?;
+            return Ok(response);
+        }
+
+        Err("Failed to fetch data".into())
+
+    }
+
+    pub async fn employees(&mut self) -> Result<Vec<Employee>, Box<dyn Error>> {
+        let url = "https://app.roughlyright.com/employees?active=true";
+        let response = self.get(url).await?;
         if response.status().is_success() {
             let project_list: Vec<Employee> = response.json().await?;
             return Ok(project_list);
@@ -53,11 +68,8 @@ impl RoughlyRight {
     }
 
     pub async fn projects(&mut self) -> Result<Vec<Project>, Box<dyn Error>> {
-
-        self.login().await?;
-
         let url = "https://app.roughlyright.com/projects?finished=false&noGroupFilter=true&projection=planning";
-        let response = self.client.get(url).send().await?;
+        let response = self.get(url).await?;
         if response.status().is_success() {
             let list: Vec<Project> = response.json().await?;
             return Ok(list);
@@ -74,11 +86,8 @@ impl RoughlyRight {
     }
 
     pub async fn customers(&mut self) -> Result<Vec<Customer>, Box<dyn Error>> {
-
-        self.login().await?;
-
         let url = "https://app.roughlyright.com/customers";
-        let response = self.client.get(url).send().await?;
+        let response = self.get(url).await?;
         if response.status().is_success() {
             let list: Vec<Customer> = response.json().await?;
             return Ok(list);
@@ -86,7 +95,6 @@ impl RoughlyRight {
             eprintln!("Failed to fetch data: {}", response.status());
         }
         Ok(Vec::new())
-
     }
 
     pub async fn customers_map(&mut self) -> Result<HashMap<String, Customer>, Box<dyn Error>> {
@@ -97,25 +105,22 @@ impl RoughlyRight {
 
 
     pub async fn week_hours(&mut self, week_start: &str, week_end: &str) -> Result<Vec<WeekData>, Box<dyn Error>> {
-
-        self.login().await?;
-
         let url = format!("https://app.roughlyright.com/weekhours?allPlansForProjects=true&endWeek={}&startWeek={}", week_start, week_end);
-
-        let response = self.client.get(url).send().await?;
-
+        let response = self.get(&url).await?;
         if response.status().is_success() {
             let week_data_list: Vec<WeekData> = response.json().await?;
             return Ok(week_data_list);
         } else {
-            // Handle the error
             eprintln!("Failed to fetch data: {}", response.status());
         }
-
         Ok(Vec::new())
-
     }
 
+    /// Returns a map of all projects and who works in them on a certain week. Ignores employees
+    /// with no hours for the specific week. This only returns a subset of the data.
+    ///
+    /// let mut rr = RoughlyRight::new(&username, &password);
+    /// let weekly_projects: = rr.weekly_work("202440").await?;
     pub async fn weekly_work(&mut self, week: &str) -> Result<HashMap<String, CompactProject>, Box<dyn Error>> {
 
         let week_list = self.week_hours(week, week).await?;
