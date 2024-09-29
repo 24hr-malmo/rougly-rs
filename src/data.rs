@@ -7,6 +7,7 @@ pub struct Customer {
     #[serde(rename = "_id")]
     pub id: String,
     pub name: String,
+    pub image: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -98,6 +99,7 @@ pub struct CompactEmployee {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CompactProject {
     pub project: String,
+    pub image: Option<String>,
     pub employees: HashSet<CompactEmployee>,
 }
 

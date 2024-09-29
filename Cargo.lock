@@ -748,7 +748,7 @@ dependencies = [
 
 [[package]]
 name = "roughly-rs"
-version = "0.1.2"
+version = "0.1.4"
 dependencies = [
  "reqwest",
  "serde",

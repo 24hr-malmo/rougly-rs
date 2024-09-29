@@ -14,6 +14,9 @@ pub struct RoughlyRight {
     logged_in: bool,
 }
 
+const CUSTOMER_IMAGE_URL: &str = "https://rr-space-prod.ams3.cdn.digitaloceanspaces.com/img/customers";
+const EMPLOYEE_IMAGE_URL: &str = "https://rr-space-prod.ams3.cdn.digitaloceanspaces.com/img/profile";
+
 impl RoughlyRight {
 
     pub fn new(username: &str, password: &str) -> Self {
@@ -180,21 +183,38 @@ impl RoughlyRight {
 
                 if let std::collections::hash_map::Entry::Vacant(e) = weekly_list.entry(key) {
                     let mut set: HashSet<CompactEmployee> = HashSet::new();
+                    let mut customer_image = None;
+                    if customer.image.is_some() {
+                        customer_image = Some(format!("{}{}", CUSTOMER_IMAGE_URL, customer.image.clone().unwrap()));
+                    }
+                    let mut employee_image = None;
+                    if employee.image.is_some() {
+                        let image = employee.image.clone().unwrap();
+                        let image = image.replace("/img/profile", "");
+                        employee_image = Some(format!("{}{}", EMPLOYEE_IMAGE_URL, image));
+                    }
                     let person = CompactEmployee {
                         name: employee.name.clone(),
-                        image: employee.image.clone(),
+                        image: employee_image,
                     };
                     set.insert(person);
                     let compact_project = CompactProject {
                         project: key_clone,
                         employees: set,
+                        image: customer_image,
                     };
                     e.insert(compact_project);
                 } else {
                     let list = weekly_list.get_mut(&key_clone_2).unwrap();
+                    let mut employee_image = None;
+                    if employee.image.is_some() {
+                        let image = employee.image.clone().unwrap();
+                        let image = image.replace("/img/profile", "");
+                        employee_image = Some(format!("{}{}", EMPLOYEE_IMAGE_URL, image));
+                    }
                     let person = CompactEmployee {
                         name: employee.name.clone(),
-                        image: employee.image.clone(),
+                        image: employee_image,
                     };
                     list.employees.insert(person);
                 }
