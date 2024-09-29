@@ -89,13 +89,13 @@ pub struct Employee {
     pub color: Option<String>,
 }
 
-#[derive(Debug, Eq, Hash, PartialEq)]
+#[derive(Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct CompactEmployee {
     pub name: String,
     pub image: Option<String>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct CompactProject {
     pub project: String,
     pub employees: HashSet<CompactEmployee>,
