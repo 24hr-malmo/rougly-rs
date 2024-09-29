@@ -2,6 +2,7 @@
 name = "roughly-rs"
 version = "0.1.0"
 edition = "2021"
+repositiory = "https://github.com/24hr-malmo/rougly-rs"
 
 [dependencies]
 reqwest = { version = "0.12.7", features = [ "json", "cookies" ] }
