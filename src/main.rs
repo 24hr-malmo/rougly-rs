@@ -1,5 +1,4 @@
 use std::{env, error::Error};
-
 use roughly_rs::RoughlyRight;
 
 #[tokio::main]
