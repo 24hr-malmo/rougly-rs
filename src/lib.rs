@@ -190,8 +190,8 @@ impl RoughlyRight {
                     let mut employee_image = None;
                     if employee.image.is_some() {
                         let image = employee.image.clone().unwrap();
-                        let image = image.replace("/img/profile", "");
-                        employee_image = Some(format!("{}{}", EMPLOYEE_IMAGE_URL, image));
+                        let image = image.replace("/img/profile/", "");
+                        employee_image = Some(format!("{}/{}", EMPLOYEE_IMAGE_URL, image));
                     }
                     let person = CompactEmployee {
                         name: employee.name.clone(),
@@ -209,8 +209,8 @@ impl RoughlyRight {
                     let mut employee_image = None;
                     if employee.image.is_some() {
                         let image = employee.image.clone().unwrap();
-                        let image = image.replace("/img/profile", "");
-                        employee_image = Some(format!("{}{}", EMPLOYEE_IMAGE_URL, image));
+                        let image = image.replace("/img/profile/", "");
+                        employee_image = Some(format!("{}/{}", EMPLOYEE_IMAGE_URL, image));
                     }
                     let person = CompactEmployee {
                         name: employee.name.clone(),
