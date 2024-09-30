@@ -124,7 +124,7 @@ impl RoughlyRight {
     ///
     /// let mut rr = RoughlyRight::new(&username, &password);
     /// let weekly_projects: = rr.weekly_work("202440").await?;
-    pub async fn weekly_work(&mut self, week: &str) -> Result<HashMap<String, CompactProject>, Box<dyn Error>> {
+    pub async fn weekly_work(&mut self, week: &str, ignore: Option<Vec<String>>) -> Result<HashMap<String, CompactProject>, Box<dyn Error>> {
 
         let week_list = self.week_hours(week, week).await?;
         let projects = self.projects_map().await?;
@@ -176,6 +176,9 @@ impl RoughlyRight {
                 }
                 let employee = employee.unwrap();
 
+                if ignore.is_some() && ignore.as_ref().unwrap().contains(&employee.id) {
+                    continue;
+                }
 
                 let key = format!("{} - {}", customer.name, project.name);
                 let key_clone = key.clone();
